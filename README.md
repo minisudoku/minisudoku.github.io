@@ -37,7 +37,7 @@ That’s it\! No build tools or server required.
 
 ## 🌐 Play Online
 
-You can play the latest version live here: **[https://minisudoku.github.io](minisudoku.github.io)**
+You can play the latest version live here: **[minisudoku.github.io](https://minisudoku.github.io)**
 
 -----
 
