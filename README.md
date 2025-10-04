@@ -1,17 +1,17 @@
 ﻿# Mini Sudoku (HTML, CSS, JavaScript)
 
-A simple, browser-based implementation of the classic logic puzzle, **Mini Sudoku** (specifically the smaller $2 \times 3$ grid variation), built entirely with **HTML**, **CSS**, and **vanilla JavaScript**. Challenge your mind with this bite-sized brain teaser\!
+A simple, browser-based implementation of the classic logic puzzle, **Mini Sudoku**, built entirely with **HTML**, **CSS**, and **vanilla JavaScript**. Challenge your mind with this engaging brain teaser that features a $6 \times 6$ grid with six $2 \times 3$ blocks\!
 
 -----
 
 ## 🧩 Features
 
-  * **Compact $2 \times 3$ Grid:** A smaller, quicker version of Sudoku using numbers 1, 2, and 3.
-  * **Core Sudoku Logic:** Ensure each row, column, and the two $2 \times 3$ blocks contain the numbers 1 through 3 exactly once.
-  * **Input Validation:** Immediate feedback on incorrect entries.
-  * **Timer and Game State:** Tracks solve time and indicates a complete puzzle. ⏱️
-  * **Generate New Puzzle:** Ability to start a new, randomized puzzle.
-  * **Minimalist Design:** Clean, distraction-free interface for focus. ✨
+  * **Challenging $6 \times 6$ Grid:** A popular Sudoku variation using the numbers 1 through 6.
+  * **Core Sudoku Logic:** Ensure each row, column, and the six $2 \times 3$ blocks contain the numbers 1 through 6 exactly once.
+  * **Input Validation:** Get immediate feedback on incorrect entries.
+  * **Timer and Game State:** Tracks your solve time and indicates when the puzzle is complete. ⏱️
+  * **Generate New Puzzle:** Start a new, randomized puzzle whenever you want.
+  * **Minimalist Design:** Clean, distraction-free interface to help you focus. ✨
 
 -----
 
