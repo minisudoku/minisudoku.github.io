@@ -221,6 +221,11 @@ Copyright (c) 2025 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
             cursor: default;
         }
 
+        .sudoku-cell.error {
+            color: #e74c3c !important;
+            background: #ffe6e6 !important;
+        }
+
         .sudoku-cell.hint-cell {
             color: #f39c12;
             animation: pulse 1s infinite;
@@ -230,28 +235,10 @@ Copyright (c) 2025 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
             color: #4a90e2;
         }
 
-        .sudoku-cell.block-complete {
-            animation: blockComplete 0.6s ease-out;
-        }
-
         @keyframes pulse {
             0% { background: #fff3cd; }
             50% { background: #ffeaa7; }
             100% { background: #fff3cd; }
-        }
-
-        @keyframes blockComplete {
-            0% {
-                background: #d4edda;
-                transform: scale(1);
-            }
-            50% {
-                background: #a8e6b8;
-                transform: scale(1.1);
-            }
-            100% {
-                transform: scale(1);
-            }
         }
 
         .controls {
@@ -1001,7 +988,6 @@ Copyright (c) 2025 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
         let startTime = null;
         let timerInterval = null;
         let currentLeaderboardTab = 'easy';
-        let completedBlocks = new Set();
 
         // Completion/score flags to avoid duplicates and timer restart after reload
         let gameCompleted = false;
@@ -1042,7 +1028,6 @@ Copyright (c) 2025 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
                 currentPuzzleNumber,
                 hintedCells: Array.from(hintedCells),
                 userFilledCells: Array.from(userFilledCells),
-                completedBlocks: Array.from(completedBlocks),
                 startTime,
                 elapsedTime: elapsed,
                 gameCompleted,
@@ -1068,7 +1053,6 @@ Copyright (c) 2025 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
                     currentPuzzleNumber = gameState.currentPuzzleNumber || 1;
                     hintedCells = new Set(gameState.hintedCells || []);
                     userFilledCells = new Set(gameState.userFilledCells || []);
-                    completedBlocks = new Set(gameState.completedBlocks || []);
                     gameCompleted = !!gameState.gameCompleted;
                     completionTimeMs = gameState.completionTimeMs || 0;
                     scoreRecorded = !!gameState.scoreRecorded;
@@ -1154,7 +1138,7 @@ Copyright (c) 2025 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
         function showLeaderboardTab(difficulty) {
             currentLeaderboardTab = difficulty;
 
-            // Update active tab
+            // Update active tab reliably (avoid using event.target)
             document.querySelectorAll('.leaderboard-tab').forEach(tab => {
                 if (tab.textContent.trim().toLowerCase() === difficulty) {
                     tab.classList.add('active');
@@ -1218,15 +1202,15 @@ Copyright (c) 2025 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
         }
 
         function isValidMove(row, col, num) {
-            // Check row
+            // Row
             for (let c = 0; c < 6; c++) {
                 if (board[row][c] === num) return false;
             }
-            // Check column
+            // Col
             for (let r = 0; r < 6; r++) {
                 if (board[r][col] === num) return false;
             }
-            // Check 2x3 block
+            // Block 2x3
             const blockStartRow = Math.floor(row / 2) * 2;
             const blockStartCol = Math.floor(col / 3) * 3;
             for (let r = blockStartRow; r < blockStartRow + 2; r++) {
@@ -1235,53 +1219,6 @@ Copyright (c) 2025 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
                 }
             }
             return true;
-        }
-
-        function isBlockComplete(blockIndex) {
-            const blockRow = Math.floor(blockIndex / 2);
-            const blockCol = blockIndex % 2;
-            const startRow = blockRow * 2;
-            const startCol = blockCol * 3;
-            
-            const numbers = new Set();
-            for (let r = startRow; r < startRow + 2; r++) {
-                for (let c = startCol; c < startCol + 3; c++) {
-                    if (board[r][c] === 0) return false;
-                    if (board[r][c] !== solution[r][c]) return false;
-                    numbers.add(board[r][c]);
-                }
-            }
-            return numbers.size === 6;
-        }
-
-        function animateBlockCompletion(blockIndex) {
-            if (completedBlocks.has(blockIndex)) return;
-            
-            completedBlocks.add(blockIndex);
-            const blockRow = Math.floor(blockIndex / 2);
-            const blockCol = blockIndex % 2;
-            const startRow = blockRow * 2;
-            const startCol = blockCol * 3;
-            
-            for (let r = startRow; r < startRow + 2; r++) {
-                for (let c = startCol; c < startCol + 3; c++) {
-                    const cell = document.querySelector(`[data-row="${r}"][data-col="${c}"]`);
-                    if (cell) {
-                        cell.classList.add('block-complete');
-                        setTimeout(() => {
-                            cell.classList.remove('block-complete');
-                        }, 600);
-                    }
-                }
-            }
-        }
-
-        function checkBlockCompletions() {
-            for (let blockIndex = 0; blockIndex < 6; blockIndex++) {
-                if (!completedBlocks.has(blockIndex) && isBlockComplete(blockIndex)) {
-                    animateBlockCompletion(blockIndex);
-                }
-            }
         }
 
         // Utility helpers
@@ -1454,7 +1391,6 @@ Copyright (c) 2025 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
             currentPuzzleNumber = 1;
             hintedCells.clear();
             userFilledCells.clear();
-            completedBlocks.clear();
             document.querySelectorAll('.difficulty-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelector(`.difficulty-btn.${difficulty}`).classList.add('active');
             initGame();
@@ -1471,7 +1407,6 @@ Copyright (c) 2025 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
             hintsUsed = 0;
             hintedCells.clear();
             userFilledCells.clear();
-            completedBlocks.clear();
 
             // Reset completion/timer flags
             gameCompleted = false;
@@ -1607,7 +1542,6 @@ Copyright (c) 2025 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
             cell.classList.add('selected');
 
             checkErrors();
-            checkBlockCompletions();
             saveGameState();
         }
 
@@ -1737,9 +1671,6 @@ Copyright (c) 2025 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
 
             const cell = document.querySelector(`[data-row="${randomCell.row}"][data-col="${randomCell.col}"]`);
             if (cell) cell.classList.add('hint-cell');
-
-            // Check for block completions
-            checkBlockCompletions();
 
             // Check if puzzle is complete after hint
             let isComplete = true;
